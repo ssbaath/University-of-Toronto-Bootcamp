@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <title>Flask MongoDB-Visualization</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<style>
+    #map {
+        height: 500px;
+    }
+</style>
+</style>
+<style>
+    .graph-container {
+        display: inline-block;
+        width: 45%; /* Adjust the width as per your requirements */
+        padding: 10px; /* Add some padding for spacing */
+        box-sizing: border-box; /* Include padding and border in the total width */
+        margin-right: 20px; /* Add margin to create space between the graph containers */
+    }
+    
+    .graph-container:last-child {
+        margin-right: 0; /* Remove margin for the last graph container to avoid extra space */
+    }
+
+</style>
+</head>
+
+<body>
+
+<div style="background-image: url('/static/austrailia.jpg');background-repeat: no-repeat; background-size: auto;background-size:100% 100%;
+ position: fixed;width: 100%;height: 100%;-webkit-filter: blur(5px);-moz-filter: blur(1px);-o-filter: blur(1px);-ms-filter: blur(1px);filter: blur(1px);
+  top: 0;left: 0;
+  z-index: -1;">
+</div>
+
+         <div class="flex-container">
+			 <div style="flex-grow: 1"><div class="dropdown">
+  <button class="dropbtn">Menu</button>
+  <div class="dropdown-content">
+    <a href="/">Main</a>
+    <a href="/third">Task Distribution</a>
+	  <a href="/fourth">Comparisons</a>
+      <a href="/Graphs">Graphs</a>
+   <a href="/AIRBNB">AIRBNB</a>
+  </div>
+  <h1>Flask Leaflet Map</h1>
+  
+  <div id="map"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([40.730610, -73.935242], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Retrieve the data passed from Flask
+        var data = {{ data|tojson }};
+
+        // Loop through the data and add markers to the map
+        for (var i = 0; i < data.length; i++) {
+            var marker = L.marker([data[i].latitude, data[i].longitude]).addTo(map);
+        }
+    </script>
+ 
+</body>
+</html>

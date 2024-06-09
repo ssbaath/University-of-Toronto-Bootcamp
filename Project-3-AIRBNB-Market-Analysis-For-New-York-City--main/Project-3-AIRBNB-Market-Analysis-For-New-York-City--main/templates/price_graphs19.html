@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Graphs</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.7/d3.layout.cloud.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+   
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <style>
+        h1 {
+            text-align: center;
+        }
+
+        #chart-flexer {
+            display: flex;
+            width: 100%;
+            place-content: space-around space-evenly;
+        }
+    </style>
+</head>
+<body>
+    <div style="background-image: url('/static/New York 3.jpg');background-repeat: no-repeat; background-size: auto;background-size:100% 100%;
+    position: fixed;width: 100%;height: 100%;-webkit-filter: blur(5px);-moz-filter: blur(1px);-o-filter: blur(1px);-ms-filter: blur(1px);filter: blur(1px);
+    top: 0;left: 0;
+    z-index: -1;">
+    </div> 
+
+    <div class="flex-container">
+        <div style="flex-grow: 1">
+            <div class="dropdown">
+                <button class="dropbtn">Menu</button>
+                <div class="dropdown-content">
+                    <a href="/">Task Distribution</a>
+                    <a href="/first">Basic Exploratory Analysis</a>
+                    <a href="/second">Mean Price Comparison</a>
+                    <a href="/third">Word Cloud of All The Neighbourhoods</a>
+                </div>
+            </div>
+        </div>
+        <div style="flex-grow: 1">
+            <div>
+            </div>
+        </div>
+        <div style="flex-grow: 1">
+            <h2>Borough</h2>
+            <div class="switch-field">
+                <input type="radio" id="b-1" name="uiBorough" value="1" onclick="showGraph('Brooklyn')" />
+                <label for="b-1">Brooklyn</label>
+                <input type="radio" id="b-2" name="uiBorough" value="2" checked onclick="showGraph('Manhattan')" />
+                <label for="b-2">Manhattan</label>
+                <input type="radio" id="b-3" name="uiBorough" value="3" onclick="showGraph('Bronx')" />
+                <label for="b-3">Bronx</label>
+                <input type="radio" id="b-4" name="uiBorough" value="4" onclick="showGraph('Queens')" />
+                <label for="b-4">Queens</label>
+                <input type="radio" id="b-5" name="uiBorough" value="5" onclick="showGraph('Staten Island')" />
+                <label for="b-5">Staten Island</label>
+            </div>
+        </div>  
+    </div>
+
+    <div id="chart-flexer">
+        <div id="combinedChartContainer1" style="width: 500px; height: 300px;"></div>
+        <div id="combinedChartContainer2" style="width: 500px; height: 300px;"></div>
+    </div>
+
+    <script>
+        // Function to create the combined bar chart for 2019
+        function createCombinedChart1(graphData, selectedBorough) {
+            Highcharts.chart('combinedChartContainer1', {
+                chart: {
+                    type: 'bar'
+                },
+                title: {
+                    text: graphData[selectedBorough].title
+                },
+                xAxis: {
+                    categories: graphData[selectedBorough].data.index // Use neighborhood names as categories
+                },
+                yAxis: {
+                    title: {
+                        text: 'Mean Price'
+                    }
+                },
+                series: [{
+                    name: 'Mean Price',
+                    data: graphData[selectedBorough].data.data // Use the mean price values for the selected borough
+                }]
+            });
+        }
+
+        // Function to show the selected borough graph for 2019
+        function showGraph1(selectedBorough) {
+            const graphData = {
+                "Brooklyn": { containerId: "combinedChartContainer1", title: "Mean Price for each Neighborhood in Brooklyn in 2019", data: {} },
+                "Manhattan": { containerId: "combinedChartContainer1", title: "Mean Price for each Neighborhood in Manhattan in 2019", data: {} },
+                "Bronx": { containerId: "combinedChartContainer1", title: "Mean Price for each Neighborhood in Bronx in 2019", data: {} },
+                "Queens": { containerId: "combinedChartContainer1", title: "Mean Price for each Neighborhood in Queens in 2019", data: {} },
+                "Staten Island": { containerId: "combinedChartContainer1", title: "Mean Price for each Neighborhood in Staten Island in 2019", data: {} }
+            };
+
+            // Fetch data for all boroughs for 2019
+            Promise.all([
+                fetch('/Data10'), // Brooklyn
+                fetch('/Data11'), // Manhattan
+                fetch('/Data12'), // Bronx
+                fetch('/Data13'), // Queens
+                fetch('/Data14')  // Staten Island
+            ])
+            .then(responses => Promise.all(responses.map(response => response.json())))
+            .then(dataArray => {
+                dataArray.forEach((data, index) => {
+                    const borough = Object.keys(graphData)[index];
+                    graphData[borough].data = data;
+                });
+
+                createCombinedChart1(graphData, selectedBorough);
+            })
+            .catch(error => console.error("Error fetching data:", error));
+        }
+
+        // Call the showGraph1 function with the default selected borough (Manhattan) when the page loads
+        document.addEventListener("DOMContentLoaded", function() {
+            showGraph1('Manhattan');
+        });
+
+        // Function to create the combined bar chart for 2023
+        function createCombinedChart2(graphData, selectedBorough) {
+            Highcharts.chart('combinedChartContainer2', {
+                chart: {
+                    type: 'bar'
+                },
+                title: {
+                    text: graphData[selectedBorough].title
+                },
+                xAxis: {
+                    categories: graphData[selectedBorough].data.index // Use neighborhood names as categories
+                },
+                yAxis: {
+                    title: {
+                        text: 'Mean Price'
+                    }
+                },
+                series: [{
+                    name: 'Mean Price',
+                    data: graphData[selectedBorough].data.data // Use the mean price values for the selected borough
+                }]
+            });
+        }
+
+        // Function to show the selected borough graph for 2023
+        function showGraph2(selectedBorough) {
+            const graphData = {
+                "Brooklyn": { containerId: "combinedChartContainer2", title: "Mean Price for each Neighborhood in Brooklyn in 2023", data: {} },
+                "Manhattan": { containerId: "combinedChartContainer2", title: "Mean Price for each Neighborhood in Manhattan in 2023", data: {} },
+                "Bronx": { containerId: "combinedChartContainer2", title: "Mean Price for each Neighborhood in Bronx in 2023", data: {} },
+                "Queens": { containerId: "combinedChartContainer2", title: "Mean Price for each Neighborhood in Queens in 2023", data: {} },
+                "Staten Island": { containerId: "combinedChartContainer2", title: "Mean Price for each Neighborhood in Staten Island in 2023", data: {} }
+            };
+
+            // Fetch data for all boroughs for 2023
+            Promise.all([
+                fetch('/Data15'), // Brooklyn
+                fetch('/Data16'), // Manhattan
+                fetch('/Data17'), // Bronx
+                fetch('/Data18'), // Queens
+                fetch('/Data19')  // Staten Island
+            ])
+            .then(responses => Promise.all(responses.map(response => response.json())))
+            .then(dataArray => {
+                dataArray.forEach((data, index) => {
+                    const borough = Object.keys(graphData)[index];
+                    graphData[borough].data = data;
+                });
+
+                createCombinedChart2(graphData, selectedBorough);
+            })
+            .catch(error => console.error("Error fetching data:", error));
+        }
+
+        // Call the showGraph2 function with the default selected borough (Manhattan) when the page loads
+        document.addEventListener("DOMContentLoaded", function() {
+            showGraph2('Manhattan');
+        });
+
+        // Function to show the selected borough graph
+        function showGraph(selectedBorough) {
+            showGraph1(selectedBorough);
+            showGraph2(selectedBorough);
+        }
+    </script>
+</body>
+</html>
